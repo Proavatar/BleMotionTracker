@@ -52,7 +52,6 @@ let bleUuidButtonPressedCharacteristic = CBUUID( string: "135D4001-6298-DA99-F42
 // Constants
 // ----------------------------------------------------------------------------
 let LocalName         : String = "BLE-MT"
-let ConnectionTimeout : TimeInterval = 2
 let z_axis            : simd_double3 = simd_double3(x:0, y:0, z:1)
 let MonitorConnection : Bool = false
 
@@ -378,10 +377,10 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
         
         data.append( Data( timestamp.bytes ) )
         
+        data.append( Data( Float(orientation.real  ).bytes) )
         data.append( Data( Float(orientation.imag.x).bytes) )
         data.append( Data( Float(orientation.imag.y).bytes) )
         data.append( Data( Float(orientation.imag.z).bytes) )
-        data.append( Data( Float(orientation.real  ).bytes) )
         
         blePeripheralManager!.updateValue(data,
                                           for: orientationCharacteristic!,
