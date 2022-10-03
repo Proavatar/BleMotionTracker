@@ -44,6 +44,9 @@ let bleUuidResetHeadingCharacteristic  = CBUUID( string: "135D2002-6298-DA99-F42
 let bleUuidMeasurementService          = CBUUID( string: "135D3000-6298-DA99-F42B-8323F9632AEB" )
 let bleUuidOrientationCharacteristic   = CBUUID( string: "135D3001-6298-DA99-F42B-8323F9632AEB" )
 
+// ---- User Interface Service —-
+let bleUuidUserInterfaceService        = CBUUID( string: "135D4000-6298-DA99-F42B-8323F9632AEB" )
+let bleUuidButtonPressedCharacteristic = CBUUID( string: "135D4001-6298-DA99-F42B-8323F9632AEB" )
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -112,7 +115,8 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
     var updateRateCharacteristic    : CBMutableCharacteristic?
     var resetHeadingCharacteristic  : CBMutableCharacteristic?
     var orientationCharacteristic   : CBMutableCharacteristic?
-    
+    var buttonPressedCharacteristic : CBMutableCharacteristic?
+
     // -------------------------------------------------------------------------------------------------
     var blePeripheralManager : CBPeripheralManager?
     var motionManager        : CMMotionManager?
@@ -138,11 +142,21 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
         motionManager = CMMotionManager()
     }
     
+    // -------------------------------------------------------------------------------------------------
+    func buttonPressed( buttonId: UInt8 )
+    {
+        blePeripheralManager!.updateValue( Data( [buttonId] ),
+                                           for: buttonPressedCharacteristic!,
+                                           onSubscribedCentrals: nil)
+    }
+    
     // ------------------------------------------------------------------------
     func handleEvent( event : Event )
     {
         DispatchQueue.main.async
         {
+            print( "INFO: received event \(event) in state \(self.state)" )
+
             var error = false
             
             switch self.state
@@ -390,6 +404,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
         createConnectionService()
         createConfigurationService()
         createMeasurementService()
+        createUserInterfaceService()
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -450,6 +465,23 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
                 permissions: [.writeable])
                 
         service.characteristics!.append(orientationCharacteristic!)
+    }
+    
+    // -------------------------------------------------------------------------------------------------
+    func createUserInterfaceService()
+    {
+        let service = CBMutableService( type: bleUuidUserInterfaceService, primary: true)
+        service.characteristics = []
+        servicesToAdd.append(service)
+
+        buttonPressedCharacteristic =
+            CBMutableCharacteristic(
+                type: bleUuidButtonPressedCharacteristic,
+                properties: [.notify],
+                value: nil,
+                permissions: [.writeable, .readable])
+                
+        service.characteristics!.append(buttonPressedCharacteristic!)
     }
     
     // -------------------------------------------------------------------------------------------------

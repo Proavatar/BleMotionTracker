@@ -16,5 +16,12 @@ class ViewController: UIViewController
         super.viewDidLoad()
         bleMotionTracker = BleMotionTracker.shared
     }
+    
+    @IBAction func buttonPressed(_ sender: Any)
+    {
+        let button : UIButton = sender as! UIButton
+        bleMotionTracker!.buttonPressed(buttonId: UInt8(button.tag) )
+    }
+    
 }
 
