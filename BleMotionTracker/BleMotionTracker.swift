@@ -1,6 +1,6 @@
-//
-//  BleMotionTracker.swift
-//
+// ----------------------------------------------------------------------------
+//  BleMotionTracker
+// ----------------------------------------------------------------------------
 
 import Foundation
 import CoreBluetooth
@@ -51,9 +51,7 @@ let bleUuidButtonPressedCharacteristic = CBUUID( string: "135D4001-6298-DA99-F42
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-let LocalName         : String = "BLE-MT"
-let z_axis            : simd_double3 = simd_double3(x:0, y:0, z:1)
-let MonitorConnection : Bool = false
+let LocalName : String = "BLE-MT"
 
 // ----------------------------------------------------------------------------
 enum Event : Int
@@ -88,24 +86,21 @@ enum ChoicePoint : Int
 }
 
 // ----------------------------------------------------------------------------
-class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
+protocol BleMotionTrackerDelegate : AnyObject
 {
-    public static let shared = BleMotionTracker()
+    func statusUpdate( status: String )
+}
 
+// ----------------------------------------------------------------------------
+class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDelegate
+{
+    
     // -------------------------------------------------------------------------------------------------
     var state : State = State.Idle
     
     // -------------------------------------------------------------------------------------------------
     var servicesToAdd        : [CBMutableService] = []
-    var orientation          : simd_quatd         = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
-    var startTimestamp       : TimeInterval       = CFAbsoluteTimeGetCurrent()
-    var currentTimestamp     : TimeInterval       = CFAbsoluteTimeGetCurrent()
-    var timestamp            : UInt32             = 0
-    var updateRate           : UInt8              = 60
-    var headingOffset        : simd_quatd         = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
-    
-    var sampleTimer          : Timer?
-    
+        
     var characteristic       : CBCharacteristic?
     var readRequest          : CBATTRequest?
 
@@ -118,14 +113,24 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
 
     // -------------------------------------------------------------------------------------------------
     var blePeripheralManager : CBPeripheralManager?
-    var motionManager        : CMMotionManager?
+    var motionTracking       : MotionTracking?
+    
+    var delegate : BleMotionTrackerDelegate?
     
     // -------------------------------------------------------------------------------------------------
     override init()
     {
         super.init()
         initBlePeripheralManager()
-        initMotionManager()
+        initMotionTracking()
+    }
+    
+    // -------------------------------------------------------------------------------------------------
+    func disable()
+    {
+        motionTracking?.disable()
+        motionTracking = nil
+        blePeripheralManager = nil
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -136,9 +141,10 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
     }
     
     // -------------------------------------------------------------------------------------------------
-    func initMotionManager()
+    func initMotionTracking()
     {
-        motionManager = CMMotionManager()
+        motionTracking = MotionTracking()
+        motionTracking?.delegate = self
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -189,6 +195,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
                     {
                         case .didConnect :
                             self.stopAdvertising()
+                            self.delegate?.statusUpdate(status: "Connected")
                             self.state = .Connected
                         
                         case .didUnsubscribeFrom :
@@ -256,12 +263,14 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
             case .CP_poweredOn:
             if blePeripheralManager!.state == .poweredOn
             {
+                delegate?.statusUpdate(status: "Powered-on")
                 createServices()
                 addNextService()
                 state = .Initializing
             }
             else
             {
+                delegate?.statusUpdate(status: "Powered-off")
                 state = .Idle
             }
             
@@ -284,6 +293,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
                 }
                 else
                 {
+                    delegate?.statusUpdate(status: "Connected")
                     state = .Connected
                 }
             
@@ -313,6 +323,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
               CBAdvertisementDataServiceUUIDsKey:[ bleUuidConnectionService,
                                                    bleUuidConfigurationService,
                                                    bleUuidMeasurementService ] ] )
+        delegate?.statusUpdate(status: "Advertising")
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -324,54 +335,39 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
     // -------------------------------------------------------------------------------------------------
     func startMeasuring()
     {
-        motionManager!.startDeviceMotionUpdates( using: .xArbitraryCorrectedZVertical )
-        sampleTimer = Timer.scheduledTimer( timeInterval: 1.0/Double(updateRate),
-                                            target: self,
-                                            selector: #selector(sampleTimerExpired),
-                                            userInfo: nil, repeats: true )
-    }
-    
-    // -------------------------------------------------------------------------------------------------
-    @objc func sampleTimerExpired()
-    {
-        let data : CMDeviceMotion? = motionManager!.deviceMotion
-        
-        if data == nil { return }
-        
-        currentTimestamp = CFAbsoluteTimeGetCurrent() - startTimestamp
-        
-        timestamp = UInt32((UInt64(currentTimestamp*1000000)) % UInt64(UInt32.max))
-
-        let q : CMQuaternion = data!.attitude.quaternion
-
-        orientation = simd_mul( headingOffset, simd_quatd( ix: q.x, iy: q.y, iz: q.z, r: q.w ) )
-        
-        updateOrientation()
+        motionTracking?.startMeasuring()
     }
     
     // -------------------------------------------------------------------------------------------------
     func stopMeasuring()
     {
-        if sampleTimer == nil { return }
-        sampleTimer!.invalidate()
-        motionManager!.stopDeviceMotionUpdates()
+        motionTracking?.stopMeasuring()
     }
     
     // -------------------------------------------------------------------------------------------------
     func calculateHeadingOffset()
     {
-        let yaw = motionManager!.deviceMotion!.attitude.yaw
-        headingOffset = simd_quaternion( -yaw, z_axis )
+        motionTracking?.calculateHeadingOffset()
     }
     
     // -------------------------------------------------------------------------------------------------
     func readUpdateRate()
     {
-        updateRate = updateRateCharacteristic!.value![0]
+        motionTracking?.updateRate = updateRateCharacteristic!.value![0]
     }
     
     // -------------------------------------------------------------------------------------------------
-    func updateOrientation()
+    func addNextService()
+    {
+        blePeripheralManager!.add(servicesToAdd.first!)
+    }
+    
+    // -------------------------------------------------------------------------------------------------
+    // MotionTracking delegate protocol
+    // -------------------------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------------------------
+    func measurementUpdate(timestamp: UInt32, orientation: simd_quatd, acceleration: simd_double3)
     {
         var data : Data = Data(capacity: 20)
         
@@ -385,12 +381,6 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
         blePeripheralManager!.updateValue(data,
                                           for: orientationCharacteristic!,
                                           onSubscribedCentrals: nil)
-    }
-    
-    // -------------------------------------------------------------------------------------------------
-    func addNextService()
-    {
-        blePeripheralManager!.add(servicesToAdd.first!)
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -545,7 +535,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate
     {
         if request.characteristic == updateRateCharacteristic
         {
-            request.value = Data( [updateRate] )
+            request.value = Data( [ motionTracking!.updateRate ] )
             
             peripheral.respond(to: request, withResult: .success)
             

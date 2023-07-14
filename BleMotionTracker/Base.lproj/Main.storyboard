@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_0" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,24 +14,90 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="BleMotionTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f2k-kl-lOW">
-                                <rect key="frame" x="125" y="363" width="140" height="118"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f2k-kl-lOW">
+                                <rect key="frame" x="20" y="255.5" width="280" height="57"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Button">
-                                    <color key="baseBackgroundColor" systemColor="systemOrangeColor"/>
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="20"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="buttonPressed:" destination="BYZ-38-t0r" eventType="touchDown" id="QrH-b5-zSs"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="GfA-Ym-wiB">
+                                <rect key="frame" x="20" y="40" width="280" height="32"/>
+                                <segments>
+                                    <segment title="Sensor"/>
+                                    <segment title="Recorder"/>
+                                </segments>
+                                <connections>
+                                    <action selector="functionChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="vvI-Lx-Kiz"/>
+                                </connections>
+                            </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bluetooth status: diabled" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zrp-gL-keU">
+                                <rect key="frame" x="20" y="111" width="280" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recording" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vVh-aP-PrW">
+                                <rect key="frame" x="20" y="450" width="211" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Hx-sT-p1L">
+                                <rect key="frame" x="251" y="443" width="51" height="31"/>
+                            </switch>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mtl-la-TS9">
+                                <rect key="frame" x="20" y="514" width="40" height="34"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="square.and.arrow.up" catalog="system"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fTJ-ED-6kg">
+                                <rect key="frame" x="260.5" y="514" width="39.5" height="34"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" image="trash" catalog="system"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Mtl-la-TS9" firstAttribute="top" secondItem="vVh-aP-PrW" secondAttribute="bottom" constant="40" id="4ja-pz-Bft"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Mtl-la-TS9" secondAttribute="bottom" constant="20" id="66c-B0-YbO"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fTJ-ED-6kg" secondAttribute="trailing" constant="20" id="9Km-cR-1ZD"/>
+                            <constraint firstItem="9Hx-sT-p1L" firstAttribute="leading" secondItem="vVh-aP-PrW" secondAttribute="trailing" constant="20" id="Ahi-Qs-PNo"/>
+                            <constraint firstItem="Mtl-la-TS9" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="BJP-wV-4PP"/>
+                            <constraint firstItem="Zrp-gL-keU" firstAttribute="top" secondItem="GfA-Ym-wiB" secondAttribute="bottom" constant="40" id="LUI-id-90r"/>
+                            <constraint firstItem="Zrp-gL-keU" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="NJN-5w-h1t"/>
+                            <constraint firstItem="f2k-kl-lOW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="OWg-RG-Hct"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="f2k-kl-lOW" secondAttribute="trailing" constant="20" id="W1l-aL-LsX"/>
+                            <constraint firstItem="fTJ-ED-6kg" firstAttribute="top" secondItem="9Hx-sT-p1L" secondAttribute="bottom" constant="40" id="YGV-wv-oh4"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Zrp-gL-keU" secondAttribute="trailing" constant="20" id="aYH-e4-UaE"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="fTJ-ED-6kg" secondAttribute="bottom" constant="20" id="d3R-nI-lu2"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="9Hx-sT-p1L" secondAttribute="trailing" constant="20" id="f8U-3h-fgP"/>
+                            <constraint firstItem="GfA-Ym-wiB" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="hUt-6U-eOx"/>
+                            <constraint firstItem="fTJ-ED-6kg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Mtl-la-TS9" secondAttribute="trailing" constant="8" symbolic="YES" id="lMc-z1-Bgk"/>
+                            <constraint firstItem="Mtl-la-TS9" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.125641" id="loD-Go-R7f"/>
+                            <constraint firstItem="f2k-kl-lOW" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.1" id="m5g-QX-V2C"/>
+                            <constraint firstItem="fTJ-ED-6kg" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.123077" id="nJR-nr-BSs"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GfA-Ym-wiB" secondAttribute="trailing" constant="20" id="nQI-vZ-dcK"/>
+                            <constraint firstItem="GfA-Ym-wiB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="reX-82-GCt"/>
+                            <constraint firstItem="f2k-kl-lOW" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="svm-2r-QBY"/>
+                            <constraint firstItem="vVh-aP-PrW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="t1X-if-dCe"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="bleStatusLabel" destination="Zrp-gL-keU" id="vch-hE-jrQ"/>
+                        <outlet property="clearButton" destination="fTJ-ED-6kg" id="SgF-0C-Lew"/>
+                        <outlet property="functionControl" destination="GfA-Ym-wiB" id="kE3-Xl-wNf"/>
+                        <outlet property="recordingLabel" destination="vVh-aP-PrW" id="5Yc-C6-04S"/>
+                        <outlet property="recordingSwitch" destination="9Hx-sT-p1L" id="ihw-Rn-2NN"/>
+                        <outlet property="shareButton" destination="Mtl-la-TS9" id="t2O-wm-H0x"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -39,11 +105,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

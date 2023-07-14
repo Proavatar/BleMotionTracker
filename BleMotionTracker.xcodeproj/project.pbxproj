@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B61D42982A614972006FE813 /* MotionTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61D42972A614972006FE813 /* MotionTracking.swift */; };
 		B65908A828EABEE900452FE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908A728EABEE900452FE4 /* AppDelegate.swift */; };
 		B65908AA28EABEE900452FE4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908A928EABEE900452FE4 /* SceneDelegate.swift */; };
 		B65908AC28EABEE900452FE4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908AB28EABEE900452FE4 /* ViewController.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B61D42972A614972006FE813 /* MotionTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionTracking.swift; sourceTree = "<group>"; };
 		B65908A428EABEE900452FE4 /* BleMotionTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BleMotionTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65908A728EABEE900452FE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B65908A928EABEE900452FE4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				B65908B228EABEED00452FE4 /* LaunchScreen.storyboard */,
 				B65908B528EABEED00452FE4 /* Info.plist */,
 				B65908BD28EAC02900452FE4 /* BleMotionTracker.swift */,
+				B61D42972A614972006FE813 /* MotionTracking.swift */,
 			);
 			path = BleMotionTracker;
 			sourceTree = "<group>";
@@ -144,6 +147,7 @@
 				B65908AC28EABEE900452FE4 /* ViewController.swift in Sources */,
 				B65908A828EABEE900452FE4 /* AppDelegate.swift in Sources */,
 				B65908BE28EAC02900452FE4 /* BleMotionTracker.swift in Sources */,
+				B61D42982A614972006FE813 /* MotionTracking.swift in Sources */,
 				B65908AA28EABEE900452FE4 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +304,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -330,6 +335,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
