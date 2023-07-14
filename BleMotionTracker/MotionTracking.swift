@@ -18,19 +18,15 @@ protocol MotionTrackingDelegate : AnyObject
 // ----------------------------------------------------------------------------
 class MotionTracking : NSObject
 {
+    // -------------------------------------------------------------------------------------------------
     var motionManager        : CMMotionManager?
-
     var sampleTimer          : Timer?
-    
-    var orientation          : simd_quatd         = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
-    var acceleration         : simd_double3       = simd_double3()
     var startTimestamp       : TimeInterval       = CFAbsoluteTimeGetCurrent()
-    var currentTimestamp     : TimeInterval       = CFAbsoluteTimeGetCurrent()
-    var timestamp            : UInt32             = 0
     var updateRate           : UInt8              = 60
     var headingOffset        : simd_quatd         = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
     
-    var delegate             : MotionTrackingDelegate?
+    // -------------------------------------------------------------------------------------------------
+    var delegate : MotionTrackingDelegate?
 
     // -------------------------------------------------------------------------------------------------
     override init()
@@ -55,7 +51,7 @@ class MotionTracking : NSObject
     // -------------------------------------------------------------------------------------------------
     func startMeasuring()
     {
-        motionManager!.startDeviceMotionUpdates( using: .xArbitraryCorrectedZVertical )
+        motionManager?.startDeviceMotionUpdates( using: .xArbitraryCorrectedZVertical )
         sampleTimer = Timer.scheduledTimer( timeInterval: 1.0/Double(updateRate),
                                             target: self,
                                             selector: #selector(sampleTimerExpired),
@@ -65,19 +61,20 @@ class MotionTracking : NSObject
     // -------------------------------------------------------------------------------------------------
     @objc func sampleTimerExpired()
     {
-        let data : CMDeviceMotion? = motionManager!.deviceMotion
-        
-        if data == nil { return }
-        
-        currentTimestamp = CFAbsoluteTimeGetCurrent() - startTimestamp
-        
-        timestamp = UInt32((UInt64(currentTimestamp*1000000)) % UInt64(UInt32.max))
+        guard let data : CMDeviceMotion = motionManager?.deviceMotion
+        else
+        {
+            return
+        }
 
-        let q : CMQuaternion = data!.attitude.quaternion
-        let a : CMAcceleration = data!.userAcceleration
+        let currentTimestamp = CFAbsoluteTimeGetCurrent() - startTimestamp
+        let timestamp = UInt32((UInt64(currentTimestamp*1000000)) % UInt64(UInt32.max))
 
-        orientation = simd_mul( headingOffset, simd_quatd( ix: q.x, iy: q.y, iz: q.z, r: q.w ) )
-        acceleration = simd_double3( x:a.x, y:a.y, z:a.z)
+        let q : CMQuaternion = data.attitude.quaternion
+        let a : CMAcceleration = data.userAcceleration
+
+        let orientation  = simd_mul( headingOffset, simd_quatd( ix: q.x, iy: q.y, iz: q.z, r: q.w ) )
+        let acceleration = simd_double3( x:a.x, y:a.y, z:a.z)
         
         delegate?.measurementUpdate( timestamp: timestamp,
                                      orientation: orientation,
@@ -87,16 +84,17 @@ class MotionTracking : NSObject
     // -------------------------------------------------------------------------------------------------
     func stopMeasuring()
     {
-        if sampleTimer == nil { return }
-        sampleTimer!.invalidate()
-        motionManager!.stopDeviceMotionUpdates()
+        sampleTimer?.invalidate()
+        motionManager?.stopDeviceMotionUpdates()
     }
     
     // -------------------------------------------------------------------------------------------------
     func calculateHeadingOffset()
     {
-        let yaw = motionManager!.deviceMotion!.attitude.yaw
-        headingOffset = simd_quaternion( -yaw, z_axis )
+        if let yaw = motionManager?.deviceMotion!.attitude.yaw
+        {
+            headingOffset = simd_quaternion( -yaw, z_axis )
+        }
     }
     
 }
