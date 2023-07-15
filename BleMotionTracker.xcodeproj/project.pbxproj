@@ -302,8 +302,7 @@
 				DEVELOPMENT_TEAM = J6396Z5FUC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleMotionTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MotionTracker;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_CFBundleDisplayName = DeviceMotion;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth data must be processed always in order to use the orientation data.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -338,8 +337,7 @@
 				DEVELOPMENT_TEAM = J6396Z5FUC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleMotionTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MotionTracker;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_CFBundleDisplayName = DeviceMotion;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth data must be processed always in order to use the orientation data.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
