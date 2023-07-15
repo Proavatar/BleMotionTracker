@@ -42,11 +42,13 @@ let bleUuidResetHeadingCharacteristic  = CBUUID( string: "135D2002-6298-DA99-F42
 
 // ---- Measurement Service ----
 let bleUuidMeasurementService          = CBUUID( string: "135D3000-6298-DA99-F42B-8323F9632AEB" )
-let bleUuidOrientationCharacteristic   = CBUUID( string: "135D3001-6298-DA99-F42B-8323F9632AEB" )
+let bleUuidInertialDataCharacteristic  = CBUUID( string: "135D3001-6298-DA99-F42B-8323F9632AEB" )
 
 // ---- User Interface Service —-
 let bleUuidUserInterfaceService        = CBUUID( string: "135D4000-6298-DA99-F42B-8323F9632AEB" )
 let bleUuidButtonPressedCharacteristic = CBUUID( string: "135D4001-6298-DA99-F42B-8323F9632AEB" )
+
+let inertialDataSize = 32
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -88,7 +90,8 @@ enum ChoicePoint : Int
 // ----------------------------------------------------------------------------
 protocol BleMotionTrackerDelegate : AnyObject
 {
-    func statusUpdate( status: String )
+    func statusUpdate ( status    : String )
+    func updateRateSet( updateRate: UInt8  )
 }
 
 // ----------------------------------------------------------------------------
@@ -99,16 +102,14 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     var state : State = State.Idle
     
     // -------------------------------------------------------------------------------------------------
-    var servicesToAdd        : [CBMutableService] = []
-        
-    var characteristic       : CBCharacteristic?
-    var readRequest          : CBATTRequest?
+    var servicesToAdd  : [CBMutableService] = []
+    var characteristic : CBCharacteristic?
 
     // -------------------------------------------------------------------------------------------------
     var disconnectionCharacteristic : CBMutableCharacteristic?
     var updateRateCharacteristic    : CBMutableCharacteristic?
     var resetHeadingCharacteristic  : CBMutableCharacteristic?
-    var orientationCharacteristic   : CBMutableCharacteristic?
+    var inertialDataCharacteristic  : CBMutableCharacteristic?
     var buttonPressedCharacteristic : CBMutableCharacteristic?
 
     // -------------------------------------------------------------------------------------------------
@@ -160,8 +161,6 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     {
         DispatchQueue.main.async
         {
-            print( "INFO: received event \(event) in state \(self.state)" )
-
             var error = false
             
             switch self.state
@@ -195,8 +194,8 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
                     {
                         case .didConnect :
                             self.stopAdvertising()
-                            self.delegate?.statusUpdate(status: "Connected")
                             self.state = .Connected
+                            self.delegate?.statusUpdate(status: "Connected")
                         
                         case .didUnsubscribeFrom :
                             self.state = .Advertising
@@ -209,7 +208,6 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
                 case .Connected :
                     switch event
                     {
-                            
                         case .didSubscribeTo :
                             self.startMeasuring()
                             self.state = .Measuring
@@ -353,7 +351,10 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     // -------------------------------------------------------------------------------------------------
     func readUpdateRate()
     {
-        motionTracking?.updateRate = updateRateCharacteristic!.value![0]
+        let updateRate = updateRateCharacteristic!.value![0]
+        
+        motionTracking?.updateRate = updateRate
+        delegate?.updateRateSet(updateRate: updateRate)
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -369,17 +370,21 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     // -------------------------------------------------------------------------------------------------
     func measurementUpdate(timestamp: UInt32, orientation: simd_quatd, acceleration: simd_double3)
     {
-        var data : Data = Data(capacity: 20)
-        
+        var data : Data = Data(capacity: inertialDataSize)
+
         data.append( Data( timestamp.bytes ) )
-        
+
         data.append( Data( Float(orientation.real  ).bytes) )
         data.append( Data( Float(orientation.imag.x).bytes) )
         data.append( Data( Float(orientation.imag.y).bytes) )
         data.append( Data( Float(orientation.imag.z).bytes) )
-        
+
+        data.append( Data( Float(acceleration.x).bytes) )
+        data.append( Data( Float(acceleration.y).bytes) )
+        data.append( Data( Float(acceleration.z).bytes) )
+
         blePeripheralManager!.updateValue(data,
-                                          for: orientationCharacteristic!,
+                                          for: inertialDataCharacteristic!,
                                           onSubscribedCentrals: nil)
     }
     
@@ -446,14 +451,14 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
         service.characteristics = []
         servicesToAdd.append(service)
 
-        orientationCharacteristic =
+        inertialDataCharacteristic =
             CBMutableCharacteristic(
-                type: bleUuidOrientationCharacteristic,
+                type: bleUuidInertialDataCharacteristic,
                 properties: [.notify],
                 value: nil,
                 permissions: [.writeable])
                 
-        service.characteristics!.append(orientationCharacteristic!)
+        service.characteristics!.append(inertialDataCharacteristic!)
     }
     
     // -------------------------------------------------------------------------------------------------
@@ -506,7 +511,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     func peripheralManager(_ peripheral: CBPeripheralManager,
                            central: CBCentral, didSubscribeTo characteristic: CBCharacteristic)
     {
-        if characteristic == orientationCharacteristic
+        if characteristic == inertialDataCharacteristic
         {
             handleEvent(event: .didSubscribeTo)
         }
@@ -520,7 +525,7 @@ class BleMotionTracker: NSObject, CBPeripheralManagerDelegate, MotionTrackingDel
     func peripheralManager(_ peripheral: CBPeripheralManager,
                            central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic)
     {
-        if characteristic == orientationCharacteristic
+        if characteristic == inertialDataCharacteristic
         {
             handleEvent(event: .didUnsubscribeFrom)
         }

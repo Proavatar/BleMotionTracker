@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B61D42982A614972006FE813 /* MotionTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61D42972A614972006FE813 /* MotionTracking.swift */; };
+		B61D429A2A618503006FE813 /* MotionRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61D42992A618503006FE813 /* MotionRecorder.swift */; };
 		B65908A828EABEE900452FE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908A728EABEE900452FE4 /* AppDelegate.swift */; };
 		B65908AA28EABEE900452FE4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908A928EABEE900452FE4 /* SceneDelegate.swift */; };
 		B65908AC28EABEE900452FE4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65908AB28EABEE900452FE4 /* ViewController.swift */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		B61D42972A614972006FE813 /* MotionTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionTracking.swift; sourceTree = "<group>"; };
+		B61D42992A618503006FE813 /* MotionRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionRecorder.swift; sourceTree = "<group>"; };
 		B65908A428EABEE900452FE4 /* BleMotionTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BleMotionTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65908A728EABEE900452FE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B65908A928EABEE900452FE4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				B65908B528EABEED00452FE4 /* Info.plist */,
 				B65908BD28EAC02900452FE4 /* BleMotionTracker.swift */,
 				B61D42972A614972006FE813 /* MotionTracking.swift */,
+				B61D42992A618503006FE813 /* MotionRecorder.swift */,
 			);
 			path = BleMotionTracker;
 			sourceTree = "<group>";
@@ -149,6 +152,7 @@
 				B65908BE28EAC02900452FE4 /* BleMotionTracker.swift in Sources */,
 				B61D42982A614972006FE813 /* MotionTracking.swift in Sources */,
 				B65908AA28EABEE900452FE4 /* SceneDelegate.swift in Sources */,
+				B61D429A2A618503006FE813 /* MotionRecorder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +302,7 @@
 				DEVELOPMENT_TEAM = 95C3T4CA8L;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleMotionTracker/Info.plist;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth is required to send orientation data.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth data must be processed always in order to use the orientation data.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -329,7 +333,7 @@
 				DEVELOPMENT_TEAM = 95C3T4CA8L;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleMotionTracker/Info.plist;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth is required to send orientation data.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth data must be processed always in order to use the orientation data.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

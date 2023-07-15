@@ -20,10 +20,10 @@ class MotionTracking : NSObject
 {
     // -------------------------------------------------------------------------------------------------
     var motionManager        : CMMotionManager?
-    var sampleTimer          : Timer?
-    var startTimestamp       : TimeInterval       = CFAbsoluteTimeGetCurrent()
-    var updateRate           : UInt8              = 60
-    var headingOffset        : simd_quatd         = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
+    
+    var updateCounter        : UInt32     = 0
+    var updateRate           : UInt8      = 60
+    var headingOffset        : simd_quatd = simd_quatd( ix: 0, iy: 0, iz: 0, r: 1)
     
     // -------------------------------------------------------------------------------------------------
     var delegate : MotionTrackingDelegate?
@@ -32,34 +32,43 @@ class MotionTracking : NSObject
     override init()
     {
         super.init()
-        initMotionManager()
+        motionManager = CMMotionManager()
     }
     
     // -------------------------------------------------------------------------------------------------
     func disable()
     {
-        sampleTimer?.invalidate()
+        motionManager?.stopDeviceMotionUpdates()
         motionManager = nil
-    }
-    
-    // -------------------------------------------------------------------------------------------------
-    func initMotionManager()
-    {
-        motionManager = CMMotionManager()
+        delegate = nil
     }
     
     // -------------------------------------------------------------------------------------------------
     func startMeasuring()
     {
         motionManager?.startDeviceMotionUpdates( using: .xArbitraryCorrectedZVertical )
-        sampleTimer = Timer.scheduledTimer( timeInterval: 1.0/Double(updateRate),
-                                            target: self,
-                                            selector: #selector(sampleTimerExpired),
-                                            userInfo: nil, repeats: true )
+        
+        motionManager?.deviceMotionUpdateInterval = 1.0/Double(updateRate)
+        updateCounter = 0
+
+        motionManager!.startDeviceMotionUpdates(
+            to: OperationQueue.current!, withHandler:
+            {
+                (deviceMotion, error) -> Void in
+
+                if( error == nil )
+                {
+                    self.deviceMotionUpdate()
+                }
+                else
+                {
+                    print("ERROR: motion update error: \(error!.localizedDescription)")
+                }
+            })
     }
     
     // -------------------------------------------------------------------------------------------------
-    @objc func sampleTimerExpired()
+    @objc func deviceMotionUpdate()
     {
         guard let data : CMDeviceMotion = motionManager?.deviceMotion
         else
@@ -67,13 +76,15 @@ class MotionTracking : NSObject
             return
         }
 
-        let currentTimestamp = CFAbsoluteTimeGetCurrent() - startTimestamp
+        let currentTimestamp = Double(updateCounter) / Double(updateRate)
+        updateCounter += 1
+                        
         let timestamp = UInt32((UInt64(currentTimestamp*1000000)) % UInt64(UInt32.max))
 
         let q : CMQuaternion = data.attitude.quaternion
-        let a : CMAcceleration = data.userAcceleration
-
         let orientation  = simd_mul( headingOffset, simd_quatd( ix: q.x, iy: q.y, iz: q.z, r: q.w ) )
+        
+        let a : CMAcceleration = data.userAcceleration
         let acceleration = simd_double3( x:a.x, y:a.y, z:a.z)
         
         delegate?.measurementUpdate( timestamp: timestamp,
@@ -84,7 +95,6 @@ class MotionTracking : NSObject
     // -------------------------------------------------------------------------------------------------
     func stopMeasuring()
     {
-        sampleTimer?.invalidate()
         motionManager?.stopDeviceMotionUpdates()
     }
     
